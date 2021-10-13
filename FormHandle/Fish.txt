@@ -1,0 +1,1 @@
+maxTemp=-4&maxTempTime=10
