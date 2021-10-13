@@ -9,7 +9,7 @@ namespace FishMonitoringWeb
         static void Main(string[] args)
         {
             string path = @"/home/name/form.html";
-            //string path = @"C:\Users\gutuf\Desktop\FishMonitoring-develop\FishMonitoringWeb\form.html";
+            
 
             try
             {

@@ -61,8 +61,7 @@ namespace HtmlFormHandle
 
             Quality quality = new TempQuality(date, interval, tempData);
             Fish mentai = new FrozenFish(quality, (double)maxTemp, new TimeSpan(0, maxTempTime, 0));
-            //Console.WriteLine($"<p>{mentai.isValid()}</p>");
-            Console.WriteLine($"<pre>{mentai.GetReport()}<pre>");
+            Console.WriteLine($"{mentai.GetReport()}");
         }
     }
 }
