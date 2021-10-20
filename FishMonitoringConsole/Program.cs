@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using MySql.Data;
+using MySql.Data.MySqlClient;
 
 namespace FishMonitoringConsole
 {
@@ -8,7 +10,31 @@ namespace FishMonitoringConsole
     {
         static void Main(string[] args)
         {
-            
+
+            string connStr = "server=10.0.4.74;user=user_name;database=fishSchem;port=3306;password=password";
+
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+
+                string sql = "SELECT * FROM fishSchem.fishTable";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader res = cmd.ExecuteReader();
+
+                while (res.Read())
+                {
+                    Console.WriteLine($"{res[1]} {res[2]} {res[3]}");
+                }
+                res.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            conn.Close();
+            Console.WriteLine("Done.");
             // temperature data
             int interval = 10; //min
             string tempData = "-6+-5";

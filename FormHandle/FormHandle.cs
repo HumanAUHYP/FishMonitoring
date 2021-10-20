@@ -2,6 +2,7 @@
 using FishMonitoringConsole;
 using System.IO;
 using System.Web;
+using MySql.Data.MySqlClient;
 
 namespace HtmlFormHandle
 {
@@ -29,6 +30,7 @@ namespace HtmlFormHandle
             //Console.WriteLine(queryStr);
             int interval = 0;
             string tempData = "";
+
             DateTime date = DateTime.Now;
 
             queryStr = HttpUtility.UrlDecode(queryStr);
@@ -36,7 +38,6 @@ namespace HtmlFormHandle
             string[] strList = queryStr.Split('&');
             foreach (string el in strList)
             {
-
                 if (el.Split('=')[0] == "fish") Console.WriteLine($"<p>Fish: {el.Split('=')[1]}</p>");
                 else if (el.Split('=')[0] == "date")
                 {
@@ -53,11 +54,11 @@ namespace HtmlFormHandle
                     tempData = el.Split('=')[1];
                     Console.WriteLine($"<p>Temp: {el.Split('=')[1]}</p>");
                 }
-
             }
             int maxTemp = -4;
             int maxTempTime = 10; // min
 
+           
 
             Quality quality = new TempQuality(date, interval, tempData);
             Fish mentai = new FrozenFish(quality, (double)maxTemp, new TimeSpan(0, maxTempTime, 0));
