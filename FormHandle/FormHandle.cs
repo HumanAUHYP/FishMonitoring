@@ -3,6 +3,7 @@ using FishMonitoringConsole;
 using System.IO;
 using System.Web;
 using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 
 namespace HtmlFormHandle
 {
@@ -33,32 +34,48 @@ namespace HtmlFormHandle
 
             DateTime date = DateTime.Now;
 
+            var library = new Dictionary<string, string>();
+
             queryStr = HttpUtility.UrlDecode(queryStr);
 
             string[] strList = queryStr.Split('&');
             foreach (string el in strList)
             {
-                if (el.Split('=')[0] == "fish") Console.WriteLine($"<p>Fish: {el.Split('=')[1]}</p>");
-                else if (el.Split('=')[0] == "date")
-                {
-                    Console.WriteLine($"<p>Date: {el.Split('=')[1]}</p>");
-                    date = DateTime.Parse(el.Split('=')[1]);
-                }
-                else if (el.Split('=')[0] == "interval")
-                {
-                    interval = int.Parse(el.Split('=')[1]);
-                    Console.WriteLine($"<p>Interval: {interval}</p>");
-                }
-                else if (el.Split('=')[0] == "temp")
-                {
-                    tempData = el.Split('=')[1];
-                    Console.WriteLine($"<p>Temp: {el.Split('=')[1]}</p>");
-                }
+                library.Add(el.Split('=')[0], el.Split('=')[1]);
+            }
+            foreach(KeyValuePair<string, string> entry in library)
+            {
+                Console.WriteLine($"<p>{entry.Key}: {entry.Value}</p>");
             }
             int maxTemp = -4;
-            int maxTempTime = 10; // min
+            int maxTempTime = 10;
 
-           
+            string connStr = "server=10.0.4.74;user=user_name;database=fishSchem;port=3306;password=password";
+
+            MySqlConnection conn = new MySqlConnection(connStr);
+            try
+            {
+                conn.Open();
+
+                string sql = $"SELECT * FROM fishSchem.fishTable Where fishName = '{library["fish"]}'";
+                MySqlCommand cmd = new MySqlCommand(sql, conn);
+                MySqlDataReader res = cmd.ExecuteReader();
+
+                while (res.Read())
+                {
+                    maxTemp = Convert.ToInt32(res[2]);
+                    maxTempTime = Convert.ToInt32(res[4]);
+                }
+                res.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            conn.Close();
+
+
 
             Quality quality = new TempQuality(date, interval, tempData);
             Fish mentai = new FrozenFish(quality, (double)maxTemp, new TimeSpan(0, maxTempTime, 0));
